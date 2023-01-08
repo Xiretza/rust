@@ -2478,8 +2478,6 @@ pub trait Iterator {
     /// Safely calculate the sum of a series of numbers:
     ///
     /// ```
-    /// #![feature(iterator_try_reduce)]
-    ///
     /// let numbers: Vec<usize> = vec![10, 20, 5, 23, 0];
     /// let sum = numbers.into_iter().try_reduce(|x, y| x.checked_add(y));
     /// assert_eq!(sum, Some(Some(58)));
@@ -2488,8 +2486,6 @@ pub trait Iterator {
     /// Determine when a reduction short circuited:
     ///
     /// ```
-    /// #![feature(iterator_try_reduce)]
-    ///
     /// let numbers = vec![1, 2, 3, usize::MAX, 4, 5];
     /// let sum = numbers.into_iter().try_reduce(|x, y| x.checked_add(y));
     /// assert_eq!(sum, None);
@@ -2498,8 +2494,6 @@ pub trait Iterator {
     /// Determine when a reduction was not performed because there are no elements:
     ///
     /// ```
-    /// #![feature(iterator_try_reduce)]
-    ///
     /// let numbers: Vec<usize> = Vec::new();
     /// let sum = numbers.into_iter().try_reduce(|x, y| x.checked_add(y));
     /// assert_eq!(sum, Some(None));
@@ -2508,8 +2502,6 @@ pub trait Iterator {
     /// Use a [`Result`] instead of an [`Option`]:
     ///
     /// ```
-    /// #![feature(iterator_try_reduce)]
-    ///
     /// let numbers = vec!["1", "2", "3", "4", "5"];
     /// let max: Result<Option<_>, <usize as std::str::FromStr>::Err> =
     ///     numbers.into_iter().try_reduce(|x, y| {
@@ -2518,7 +2510,7 @@ pub trait Iterator {
     /// assert_eq!(max, Ok(Some("5")));
     /// ```
     #[inline]
-    #[unstable(feature = "iterator_try_reduce", reason = "new API", issue = "87053")]
+    #[stable(feature = "iterator_try_reduce", since = "CURRENT_RUSTC_VERSION")]
     fn try_reduce<F, R>(&mut self, f: F) -> ChangeOutputType<R, Option<R::Output>>
     where
         Self: Sized,
