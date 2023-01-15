@@ -700,3 +700,18 @@ fn array_into_iter_rfold() {
     let s = it.rfold(10, |a, b| 10 * a + b);
     assert_eq!(s, 10432);
 }
+
+#[test]
+fn array_from_slice() {
+    // Strings to help MIRI catch if we double-free or something
+    let mut a = ["Aa".to_string(), "Bb".to_string(), "Cc".to_string(), "Dd".to_string()];
+
+    let mid = unsafe { <&[String; 2]>::from_slice_unchecked(&a[1..2]) };
+    assert_eq!(mid, &["Bb".to_string(), "Cc".to_string()]);
+
+    let mid_mut = unsafe { <&mut [String; 2]>::from_mut_slice_unchecked(&mut a[1..2]) };
+
+    mid_mut[1] = "Ee".to_string();
+    assert_eq!(mid, &["Bb".to_string(), "Ee".to_string()]);
+    assert_eq!(a, ["Aa".to_string(), "Bb".to_string(), "Ee".to_string(), "Dd".to_string()]);
+}

@@ -810,6 +810,63 @@ impl<T, const N: usize> [T; N] {
     }
 }
 
+impl<T, const N: usize> &[T; N] {
+    /// Unsafely converts a slice of `N` elements to an array reference of `N` elements.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that the slice has exactly `N` elements. Violating this constraint
+    /// causes Undefined Behaviour.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// #![feature(array_from_slice)]
+    ///
+    /// let v = [1, 0, 3, 0, 5, 6];
+    /// // SAFETY: `&v[2..4]` is a slice of 3 elements.
+    /// let r = unsafe { <&[i32; 3]>::from_slice_unchecked(&v[2..4]) };
+    /// assert_eq!(r, &[3, 0, 5]);
+    /// ```
+    #[unstable(feature = "array_from_slice", reason = "new API", issue = "none")]
+    #[inline]
+    #[must_use]
+    pub unsafe fn from_slice_unchecked(s: &[T]) -> Self {
+        // SAFETY: caller guarantees that `s` is a slice of `N` elements.
+        unsafe { &*(s.as_ptr() as *const [T; N]) }
+    }
+}
+
+impl<T, const N: usize> &mut [T; N] {
+    /// Unsafely converts a mutable slice of `N` elements to a mutable array reference of `N` elements.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that the slice has exactly `N` elements. Violating this constraint
+    /// causes Undefined Behaviour.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// #![feature(array_from_slice)]
+    ///
+    /// let mut v = [1, 0, 3, 0, 5, 6];
+    /// // SAFETY: `&mut v[2..4]` is a slice of 3 elements.
+    /// let r = unsafe { <&mut [i32; 3]>::from_mut_slice_unchecked(&mut v[2..4]) };
+    /// assert_eq!(r, &[3, 0, 5]);
+    /// r[1] = 9;
+    /// assert_eq!(r, &[3, 9, 5]);
+    /// assert_eq!(v, [1, 0, 3, 9, 5, 6]);
+    /// ```
+    #[unstable(feature = "array_from_slice", reason = "new API", issue = "none")]
+    #[inline]
+    #[must_use]
+    pub unsafe fn from_mut_slice_unchecked(s: &mut [T]) -> Self {
+        // SAFETY: caller guarantees that `s` is a slice of `N` elements.
+        unsafe { &mut *(s.as_ptr() as *mut [T; N]) }
+    }
+}
+
 /// Pulls `N` items from `iter` and returns them as an array. If the iterator
 /// yields fewer than `N` items, this function exhibits undefined behavior.
 ///
